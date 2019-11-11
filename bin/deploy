@@ -8,9 +8,9 @@ export ETH_FROM="${ETH_FROM:-$(seth rpc eth_coinbase)}"
 dapp --use solc:0.4.25 build --extract
 
 # shellcheck disable=SC2153
-{ test -z "$GEM_FAB"    || test -z "$VOX_FAB"     || test -z "$TUB_FAB" || \
-  test -z "$TAP_FAB"    || test -z "$TOP_FAB"     || test -z "$MOM_FAB" || \
-  test -z "$DAD_FAB"; } && \
+{ test -z "$GEM_FAB" || test -z "$VOX_FAB" || test -z "$TUB_FAB" ||
+  test -z "$TAP_FAB" || test -z "$TOP_FAB" || test -z "$MOM_FAB" ||
+  test -z "$DAD_FAB"; } &&
   exit 1
 
 test -z "$SAI_GEM" && SAI_GEM=$(dapp create DSToken "$(seth --to-bytes32 "$(seth --from-ascii 'ETH')")")
@@ -21,10 +21,9 @@ test -z "$SAI_PIT" && SAI_PIT="0x0000000000000000000000000000000000000123"
 
 DAI_FAB=$(dapp create DaiFab "$GEM_FAB" "$VOX_FAB" "$TUB_FAB" "$TAP_FAB" "$TOP_FAB" "$MOM_FAB" "$DAD_FAB")
 
-if [ -z "$SAI_ADM" ]
-then
-    SAI_ADM=$(dapp create DSRoles)
-    seth send "$SAI_ADM" 'setRootUser(address,bool)' "$ETH_FROM" true
+if [ -z "$SAI_ADM" ]; then
+  SAI_ADM=$(dapp create DSRoles)
+  seth send "$SAI_ADM" 'setRootUser(address,bool)' "$ETH_FROM" true
 fi
 
 seth send "$DAI_FAB" 'makeTokens()'
@@ -44,7 +43,7 @@ SAI_TUB=0x$(seth call "$DAI_FAB" 'tub()(address)')
 SAI_TAP=0x$(seth call "$DAI_FAB" 'tap()(address)')
 SAI_TOP=0x$(seth call "$DAI_FAB" 'top()(address)')
 
-cat > "load-env-$(seth chain)" << EOF
+cat >"load-env-$(seth chain)" <<EOF
 #!/bin/bash
 
 # sai deployment on $(seth chain) from $(git rev-parse HEAD)
@@ -67,7 +66,7 @@ export SAI_TAP=$SAI_TAP
 export SAI_TOP=$SAI_TOP
 EOF
 
-cat > addresses.json << EOF
+cat >addresses.json <<EOF
 {
     "SAI_GEM": "$SAI_GEM",
     "SAI_GOV": "$SAI_GOV",
